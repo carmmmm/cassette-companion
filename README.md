@@ -2,6 +2,8 @@
 
 A hand-built cassette-case device with a small OLED screen that shows live Spotify "now playing" info (complete with dancing stick figures), idle weather, and overhead flight tracking — all running standalone off a rechargeable battery.
 
+Look at Docs folder for the how to, and the purchase links to see what was bought. 
+
 ---
 
 ## What it does
