@@ -15,12 +15,11 @@ This document reflects the **actual final build**, including the real wiring, th
 - LiPo battery, 3.7V pouch cell
 - MT3608 step-up (boost) converter — **note: first unit had a broken/stripped trimpot and had to be swapped for the spare**
 - Mini slide switch (3-pin/SPDT) — **wired using the middle pin as common; the two outer-pin wiring alone does not work**
-- No WS2812B LEDs in this build (omitted — device is OLED + dancing figures only, no reel lighting)
 
 ### Build materials
-- Copper-clad board as mounting base (not standard perfboard — solid copper surface, so insulation under every joint matters more than usual)
-- Hookup wire, red/black only
+- Hookup wire, red/black only (bc that's what I had)
 - Solder, heat shrink/tape for joint insulation
+- Double Sided Foam Tape
 
 ### Software / accounts
 - Arduino IDE with ESP32 board package (`esp32` by Espressif Systems, via Boards Manager URL: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`)
@@ -31,7 +30,7 @@ This document reflects the **actual final build**, including the real wiring, th
 
 ---
 
-## Wiring — Final, Verified Working
+## Wiring 
 
 **Power chain:**
 ```
@@ -43,7 +42,7 @@ MT3608 VOUT+ → ESP32 VIN (5V)
 MT3608 VOUT- → ESP32 GND
 ```
 
-⚠️ **Switch wiring gotcha:** if using a 3-pin slide switch, the **middle pin is the common/hub** — current has no path if you only wire the two outer pins. This cost significant debugging time; wire OUT+ to the middle pin first.
+⚠️ **Switch wiring gotcha:** if using a 3-pin slide switch, the **middle pin is the common/hub** — current has no path if you only wire the two outer pins. wire OUT+ to the middle pin first.
 
 ⚠️ **MT3608 trimpot:** set to exactly **5.00V** using a multimeter *before* connecting the ESP32, with USB power feeding the TP4056 (not the battery) during calibration. If turning the trimpot in either direction produces zero voltage change, the pot is likely physically stripped/broken — swap to a spare board rather than continuing to troubleshoot a dead unit.
 
@@ -56,14 +55,12 @@ OLED SDA → ESP32 GPIO 21   (black)
 ```
 GPIO 19 is **not** the ESP32's default SCL pin (that's GPIO 22), so the code must explicitly call `Wire.begin(SDA_PIN, SCL_PIN)` with `SDA=21, SCL=19` — a plain `Wire.begin()` with no arguments will fail to find the display.
 
-**Physical safety notes (copper-clad base):**
-- Insulate every solder joint individually (heat shrink or tape) since the mounting board is solid copper, not isolated-pad perfboard.
-- Anchor wires so they can't shift during assembly — this caused a short during an earlier assembly attempt.
+**Before Closing:**
 - Dry-fit everything in the cassette shell and run it for several minutes *before* permanently gluing/closing, checking for flicker or reset that would indicate an intermittent short.
 
 ---
 
-## Software Architecture (final)
+## Software Architecture 
 
 The final code runs two things in parallel using the ESP32's dual cores, which was the fix for visualizer stuttering:
 
@@ -99,11 +96,3 @@ Spotify's `/audio-features` endpoint (which would have given real tempo/energy d
 - **Battery life while running:** expect several hours of continuous runtime, not days — the device polls Wi-Fi/Spotify continuously rather than sleeping.
 - **No re-flashing needed between charges** — code persists in flash memory permanently; only Wi-Fi/Spotify session state resets on power-up, which happens automatically within a few seconds.
 
----
-
-## If You Rebuild This Later
-
-The single most time-consuming issues during this build, in order of how much debugging they cost:
-1. A physically dead/stripped trimpot on the first MT3608 board (looked fine, never actually adjusted voltage) — swap to spare rather than over-troubleshooting.
-2. Wiring only the two outer pins of a 3-pin switch instead of using the middle common pin.
-3. The visualizer freezing every 8 seconds during Spotify polling — solved by moving all networking to the ESP32's second core via `xTaskCreatePinnedToCore`, rather than trying to shrink timeouts further.
