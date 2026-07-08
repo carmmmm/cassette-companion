@@ -2,11 +2,6 @@
 
 A hand-built cassette-case device with a small OLED screen that shows live Spotify "now playing" info (complete with dancing stick figures), idle weather, and overhead flight tracking — all running standalone off a rechargeable battery.
 
-No kit, no pre-made enclosure — just an old cassette case, an ESP32, and a lot of troubleshooting.
-
-![screen demo placeholder](docs/demo.gif)
-*(swap this for a real photo/gif of the finished device once you have one)*
-
 ---
 
 ## What it does
