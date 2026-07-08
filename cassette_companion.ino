@@ -16,8 +16,8 @@ String accessToken = "";
 unsigned long tokenExpiryMillis = 0;
 
 // Set these to your own location
-const float LAT = 36.2168;
-const float LON = -81.6746;
+const float LAT = 1;
+const float LON = 1;
 const float BOX = 0.22; // degrees, roughly 15mi radius for plane detection
 
 struct PlaneInfo {
